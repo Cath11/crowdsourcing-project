@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath crwodsourcing.wsgi --log-file -
+web: gunicorn --pythonpath crwodsourcing crwodsourcing.wsgi --log-file -
