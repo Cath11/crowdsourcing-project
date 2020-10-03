@@ -57,7 +57,7 @@ class ProjectDetail(APIView):
                  partial=True
           )
           if serializer.is_valid():
-               serializer.save()
+               serializer.save(owner=request.user)
                return Response(
                    serializer.data,
                    status=status.HTTP_200_OK
