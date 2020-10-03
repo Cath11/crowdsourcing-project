@@ -48,20 +48,24 @@ class ProjectDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-          project = self.get_object(pk)
-          self.check_object_permissions(request, project)
-          data = request.data
-          serializer = ProjectDetailSerializer(
-               instance=project,
-               data=data,
-                 partial=True
-          )
-          if serializer.is_valid():
-               serializer.save(owner=request.user)
-               return Response(
-                   serializer.data,
-                   status=status.HTTP_200_OK
-                )
+        project = self.get_object(pk)
+        self.check_object_permissions(request, project)
+        data = request.data
+        serializer = ProjectDetailSerializer(
+            instance=project,
+            data=data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save(owner=request.user)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 # Create your views here.
     def delete(self, request, pk):
