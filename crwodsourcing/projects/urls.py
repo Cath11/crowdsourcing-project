@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
 
@@ -7,7 +7,7 @@ urlpatterns = [
     path('projects/<int:pk>/', views.ProjectDetail.as_view()),
     path('project-categories/', views.ProjectCategoryList.as_view()),
     path('pledges/', views.PledgeList.as_view()),
-    path('pledges/<int:pk>', views.PledgeDetail.as_view()),
+    path('pledges/<int:pk>/', views.PledgeDetail.as_view()),
    
 ]
 

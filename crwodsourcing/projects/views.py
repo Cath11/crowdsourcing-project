@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Project, Pledge, ProjectCategory
-from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, ProjectCategorySerializer
+from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer, ProjectCategorySerializer
 from .permissions import IsOwnerOrReadOnly, IsNotOwner
 
 class ProjectList(APIView):
@@ -86,7 +86,7 @@ class PledgeList(APIView):
         
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(supporter=request.user):
             serializer.save()
             return Response(
                 serializer.data,
@@ -100,7 +100,7 @@ class PledgeList(APIView):
 class PledgeDetail(APIView):
     permissions_classes = [
         permissions.IsAuthenticatedOrReadOnly, 
-        IsNotOwner
+        IsOwnerOrReadOnly
     ]
     def get_object(self, pk):
         try:
@@ -117,15 +117,30 @@ class PledgeDetail(APIView):
     def put(self, request, pk):
         pledge = self.get_object(pk)
         self.check_object_permissions(request, pledge)
-        serializer = PledgeSerializer(pledge, data=request.data, partial=True)
+        data=request.data
+        serializer = PledgeDetailSerializer(
+            instance=pledge, 
+            data=request.data, 
+            partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            serializer.save(owner=request.user)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+                )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request, pk):
         pledge = self.get_object(pk)
-        pledge.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        self.check_object_permissions(request, pledge)
+        try:
+            pledge.delete()
+            return Response(status=status.HTTP_200_OK)
+        except Pledge.DoesNotExist:
+            raise Http404
 
 class ProjectCategoryList(APIView):
           
