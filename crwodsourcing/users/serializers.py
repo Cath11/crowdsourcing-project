@@ -10,10 +10,10 @@ class CustomUserSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
-        new_user = CustomUser.objects.create(
+        user = CustomUser.objects.create(
             username=validated_data['username'],
             email=validated_data['email']
         )
-        new_user.set_password(validated_data['password'])
-        new_user.save()
-        return new_user
+        user.set_password(validated_data['password'])
+        user.save()
+        return user

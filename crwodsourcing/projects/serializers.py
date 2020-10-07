@@ -1,16 +1,6 @@
 from rest_framework import serializers
 from .models import Project, Pledge, ProjectCategory
 
-class PledgeSerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
-    amount = serializers.IntegerField()
-    comment = serializers.CharField(max_length=200)
-    anonymous = serializers.BooleanField()
-    supporter = serializers.CharField(max_length=200)
-    project_id = serializers.IntegerField()
-    
-    def create(self, validated_data):
-        return Pledge.objects.create(**validated_data)
         
 class ProjectSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
@@ -25,6 +15,16 @@ class ProjectSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Project.objects.create(**validated_data)
 
+class PledgeSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+    amount = serializers.IntegerField()
+    comment = serializers.CharField(max_length=200)
+    anonymous = serializers.BooleanField()
+    supporter = serializers.CharField(max_length=200)
+    project_id = serializers.IntegerField()
+    
+    def create(self, validated_data):
+        return Pledge.objects.create(**validated_data)
 
 
 class ProjectDetailSerializer(ProjectSerializer):
@@ -53,11 +53,11 @@ class PledgeDetailSerializer(PledgeSerializer):
         instance.save()
         return instance
         
-class ProjectCategorySerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
-    name = serializers.CharField(max_length=50)
+# class ProjectCategorySerializer(serializers.Serializer):
+#     id = serializers.ReadOnlyField()
+#     name = serializers.CharField(max_length=50)
 
-    def create(self, validated_data):
-        return ProjectCategory.objects.create(**validated_data)
+#     def create(self, validated_data):
+#         return ProjectCategory.objects.create(**validated_data)
 
    
