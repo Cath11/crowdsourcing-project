@@ -3,7 +3,7 @@ from django.http import Http404
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Project, Pledge
+from .models import Project, Pledge, ProjectCategory
 from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer, ProjectCategorySerializer
 from .permissions import IsOwnerOrReadOnly, IsNotOwner
 
@@ -35,7 +35,7 @@ class ProjectDetail(APIView):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
         IsOwnerOrReadOnly
-        ]
+    ]
     def get_object(self, pk):
         try:
             return Project.objects.get(pk=pk)
@@ -70,16 +70,12 @@ class ProjectDetail(APIView):
 # Create your views here.
     def delete(self, request, pk):
         project = self.get_object(pk)
-        self.check_object_permissions(request, project)
-        try:
-            project.delete()
-            return Response(status=status.HTTP_200_OK)
-        except Project.DoesNotExist:
-            raise Http404 
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT) 
 
 
 class PledgeList(APIView):
-    permission_classes = [
+    permissions_classes = [
         permissions.IsAuthenticatedOrReadOnly, 
         IsNotOwner
     ]
@@ -90,19 +86,19 @@ class PledgeList(APIView):
         
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(supporter=request.user)
+        if serializer.is_valid(supporter=request.user):
+            serializer.save()
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
-                )
+            )
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
 
 class PledgeDetail(APIView):
-    permission_classes = [
+    permissions_classes = [
         permissions.IsAuthenticatedOrReadOnly, 
         IsOwnerOrReadOnly
     ]
@@ -124,9 +120,8 @@ class PledgeDetail(APIView):
         data=request.data
         serializer = PledgeDetailSerializer(
             instance=pledge, 
-            data=data, 
-            partial=True
-        )
+            data=request.data, 
+            partial=True)
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(
@@ -147,23 +142,23 @@ class PledgeDetail(APIView):
         except Pledge.DoesNotExist:
             raise Http404
 
-# class ProjectCategoryList(APIView):
+class ProjectCategoryList(APIView):
           
-#     def get(self, request, pk):
-#         categories = ProjectCategory.objects.all()
-#         serializer = ProjectCategorySerializer(categories, many=True)
-#         return Response(serializer.data)
+    def get(self, request, pk):
+        categories = ProjectCategory.objects.all()
+        serializer = ProjectCategorySerializer(categories, many=True)
+        return Response(serializer.data)
 
-#     def post(self, request):
-#             serializer = ProjectCategorySerializer(data=request.data)
-#             if serializer.is_valid():
-#                 serializer.save()
-#                 return Response(
-#                     serializer.data,
-#                     status=status.HTTP_201_CREATED
-#                 )
-#             return Response(
-#                 serializer.errors,
-#                 status=status.HTTP_400_BAD_REQUEST
-#         )
+    def post(self, request):
+            serializer = ProjectCategorySerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+        )
        
