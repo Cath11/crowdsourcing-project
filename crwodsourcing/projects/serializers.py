@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Pledge, ProjectCategory
+from .models import Project, Pledge
 
         
 class ProjectSerializer(serializers.Serializer):
