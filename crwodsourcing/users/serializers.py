@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser
-from projects.models import ProjectCategory
+
 
 
 class CustomUserSerializer(serializers.Serializer):
