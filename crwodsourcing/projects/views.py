@@ -59,11 +59,11 @@ class ProjectDetail(APIView):
     def delete(self, request, pk):
         project = self.get_object(pk)
         self.check_object_permissions(request, project)
-            try:
-                project.delete()
-                return Response(status=status.HTTP_200_OK)
-            except Project.DoesNotExist:
-                raise Http404
+        try:
+            project.delete()
+            return Response(status=status.HTTP_200_OK)
+        except Project.DoesNotExist:
+            raise Http404
 
 
 class PledgeList(APIView):
