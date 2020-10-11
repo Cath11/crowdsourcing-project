@@ -99,7 +99,7 @@ class PledgeDetail(APIView):
         self.check_object_permissions(request, pledge)
         data = request.data
         serializer = PledgeDetailSerializer(instance=pledge,
-                                            data=request.data,
+                                            data=data,
                                             partial=True)
         if serializer.is_valid():
             serializer.save(owner=request.user)
